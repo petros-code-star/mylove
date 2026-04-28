@@ -1,464 +1,517 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For You...</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;700&family=Great+Vibes&display=swap');
-        
-        :root {
-            --primary: #ff4d6d;
-            --glow: #ff6b8a;
-            --dark: #050505;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>for you ✨</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background: var(--dark);
-            overflow: hidden;
-            font-family: 'Space Grotesk', sans-serif;
-            color: white;
-            height: 100vh;
-            width: 100vw;
-            cursor: none; /* Custom cursor */
-        }
+    body {
+      background: #0a0f1e;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 1rem;
+    }
 
-        #canvas-container { position: fixed; top: 0; left: 0; z-index: 1; }
+    .card {
+      position: relative;
+      width: 90%;
+      max-width: 700px;
+      background: rgba(255, 240, 245, 0.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 4rem 4rem 3rem 3rem;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 215, 235, 0.2);
+      text-align: center;
+      color: #fff0f5;
+      transition: all 0.5s ease;
+      animation: floatGlow 4s infinite alternate ease-in-out;
+      z-index: 2;
+    }
 
-        /* Custom Cursor */
-        .cursor-dot, .cursor-ring {
-            position: fixed;
-            top: 0; left: 0;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1000;
-            transform: translate(-50%, -50%);
-            transition: transform 0.1s ease-out;
-        }
-        .cursor-dot { width: 6px; height: 6px; background: var(--primary); box-shadow: 0 0 10px var(--primary); }
-        .cursor-ring { width: 40px; height: 40px; border: 1px solid var(--glow); transition: width 0.3s, height 0.3s, border-color 0.3s; }
+    @keyframes floatGlow {
+      0% {
+        transform: translateY(0px);
+        box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 140, 180, 0.4);
+      }
+      100% {
+        transform: translateY(-12px);
+        box-shadow: 0 45px 65px rgba(0, 0, 0, 0.8), 0 0 45px rgba(255, 120, 160, 0.7);
+      }
+    }
 
-        /* UI Layer */
-        .ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; }
-        
-        .text-container { text-align: center; opacity: 0; transform: translateY(30px); }
-        .main-title { font-family: 'Great Vibes', cursive; font-size: clamp(3rem, 10vw, 8rem); color: #fff; text-shadow: 0 0 20px var(--glow), 0 0 40px var(--primary); margin-bottom: 1rem; line-height: 1; }
-        .sub-title { font-size: clamp(1rem, 3vw, 1.5rem); font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.7); border-top: 1px solid rgba(255,77,109,0.3); border-bottom: 1px solid rgba(255,77,109,0.3); padding: 1rem 0; max-width: 600px; margin: 0 auto; }
-        
-        .hidden { display: none !important; }
+    .moon-bg {
+      position: absolute;
+      top: -15%;
+      right: -5%;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle at 30% 30%, #ffe9c4, #fbb6ce);
+      border-radius: 50%;
+      filter: blur(65px);
+      opacity: 0.5;
+      z-index: -1;
+      animation: moonPulse 5s infinite alternate;
+    }
 
-        .btn-enter {
-            margin-top: 3rem;
-            padding: 1rem 3rem;
-            border: 1px solid var(--primary);
-            background: transparent;
-            color: var(--primary);
-            font-family: 'Space Grotesk';
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            cursor: none;
-            position: relative;
-            overflow: hidden;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
-            transition: color 0.5s, background 0.5s;
-        }
-        .btn-enter::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--primary); z-index: -1; transform: translateX(-100%); transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
-        .btn-enter:hover { color: #000; }
-        .btn-enter:hover::before { transform: translateX(0); }
+    @keyframes moonPulse {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      100% { opacity: 0.7; transform: scale(1.2); }
+    }
 
-        .music-toggle {
-            position: fixed; bottom: 2rem; right: 2rem; z-index: 100;
-            width: 50px; height: 50px; border-radius: 50%;
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,77,109,0.5);
-            backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s;
-        }
-        .music-toggle:hover { box-shadow: 0 0 20px var(--primary); border-color: var(--primary); }
-        .music-toggle svg { width: 20px; height: 20px; stroke: var(--primary); }
+    h1 {
+      font-size: clamp(2.8rem, 10vw, 4.8rem);
+      font-weight: 600;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #ffe6f0, #ffb7c5, #ff8da1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 0 20px #ff4470);
+      animation: titleShine 2s infinite alternate;
+    }
 
-        .credit { position: fixed; bottom: 1rem; left: 1rem; font-size: 0.7rem; opacity: 0.3; letter-spacing: 0.1em; }
-    </style>
+    @keyframes titleShine {
+      0% { filter: drop-shadow(0 0 15px #ff6b8b); }
+      100% { filter: drop-shadow(0 0 32px #ff3366); }
+    }
+
+    .sub-message {
+      font-size: 1.4rem;
+      font-weight: 300;
+      margin: 0.5rem 0 1.8rem;
+      color: #fec7d7;
+      letter-spacing: 1px;
+      animation: fadeSlide 2.6s ease-out;
+    }
+
+    @keyframes fadeSlide {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .heart-container {
+      margin: 1.2rem 0;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .heart {
+      font-size: 2.8rem;
+      animation: heartBeat 1.2s infinite ease-in-out;
+      filter: drop-shadow(0 0 18px #ff3366);
+      transform-origin: center;
+    }
+
+    .heart:nth-child(2) { animation-delay: 0.2s; }
+    .heart:nth-child(3) { animation-delay: 0.4s; }
+    .heart:nth-child(4) { animation-delay: 0.6s; }
+    .heart:nth-child(5) { animation-delay: 0.8s; }
+
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.35); }
+      50% { transform: scale(1.1); }
+      70% { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+
+    .question-text {
+      font-size: 2.4rem;
+      font-weight: 500;
+      margin: 1.8rem 0 0.8rem;
+      background: linear-gradient(to right, #ffd9e6, #ffb7c5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+    }
+
+    .blinking-cursor {
+      display: inline-block;
+      width: 4px;
+      height: 2.5rem;
+      background: #ff8da1;
+      margin-left: 6px;
+      animation: blink 0.9s step-end infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2.2rem 0 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 1rem 2.8rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 4rem;
+      background: rgba(255, 220, 230, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #fff0f5;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(255, 180, 180, 0.5);
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      background: rgba(255, 140, 160, 0.5);
+      box-shadow: 0 0 35px #ff5e7e, 0 10px 25px black;
+      transform: scale(1.07);
+      color: white;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    #noBtn {
+      transition: all 0.2s ease;
+    }
+
+    .hidden-message {
+      margin-top: 2rem;
+      font-size: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      color: #ffd0dd;
+      min-height: 3.5rem;
+      font-weight: 500;
+      text-shadow: 0 0 10px #ff3366;
+    }
+
+    .audio-control {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      color: #e0b0c0;
+      background: rgba(0,0,0,0.4);
+      padding: 0.4rem 1.5rem;
+      border-radius: 30px;
+      display: inline-block;
+      cursor: pointer;
+      transition: 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
+      letter-spacing: 0.5px;
+    }
+
+    .audio-control:hover {
+      background: rgba(255, 120, 150, 0.3);
+      color: white;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
+  <canvas id="starsCanvas"></canvas>
 
-<!-- Three.js Canvas will be injected here -->
-<div id="canvas-container"></div>
+  <div class="card">
+    <div class="moon-bg"></div>
+    <h1>Hey you ✨</h1>
+    <div class="sub-message">I have something to ask...</div>
 
-<!-- UI Elements -->
-<div class="ui-layer">
-    <div class="text-container" id="textContainer">
-        <h1 class="main-title" id="mainTitle">I asked the universe...</h1>
-        <p class="sub-title" id="subTitle">It sent me you.</p>
-        <button class="btn-enter" id="enterBtn">Enter Orbit</button>
+    <div class="heart-container">
+      <span class="heart">💖</span>
+      <span class="heart">💗</span>
+      <span class="heart">💘</span>
+      <span class="heart">💝</span>
+      <span class="heart">💕</span>
     </div>
-</div>
 
-<!-- Music Toggle -->
-<div class="music-toggle" id="musicToggle" title="Toggle Music">
-    <svg xmlns="http://www.w3.org/2000/svg" id="musicIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-    <svg class="hidden" id="musicIconOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>
-</div>
+    <div class="question-text">
+      Will you be mine?<span class="blinking-cursor"></span>
+    </div>
 
-<audio id="bgMusic" loop>
-    <!-- REPLACE THIS LINK WITH YOUR SONG -->
-    <source src="https://assets.mixkit.co/music/preview/mixkit-romantic-serenade-607.mp3" type="audio/mpeg">
-</audio>
+    <div class="button-group">
+      <button class="btn" id="yesBtn">YES 💫</button>
+      <button class="btn" id="noBtn">NO 🌙</button>
+    </div>
 
-<div class="credit">Made with Three.js & 💖</div>
+    <div class="hidden-message" id="responseMessage"></div>
+    <div class="audio-control" id="musicToggle">🎵 tap to start music</div>
+  </div>
 
-<!-- Custom Cursor Elements -->
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+  <script>
+    (function() {
+      // ----- STARS CANVAS -----
+      const canvas = document.getElementById('starsCanvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let stars = [];
 
-<!-- Libraries -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "gsap": "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
-  }
-}
-</script>
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        initStars();
+      });
 
-<script type="module">
-    import * as THREE from 'three';
-    import gsap from 'gsap';
-
-    // --- CONFIG ---
-    const PARTICLE_COUNT = 6000;
-    const HEART_SIZE = 8;
-    const COLORS = {
-        heart: 0xff4d6d,
-        aura: 0xff99aa,
-        space: 0x0a0a0f
-    };
-
-    // --- SCENE SETUP ---
-    const container = document.getElementById('canvas-container');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 20;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
-
-    // --- CUSTOM CURSOR ---
-    const cursorDot = document.getElementById('cursorDot');
-    const cursorRing = document.getElementById('cursorRing');
-    let mouse = new THREE.Vector2();
-    let targetMouse = new THREE.Vector2();
-    
-    window.addEventListener('mousemove', (e) => {
-        targetMouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-        targetMouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-        
-        cursorDot.style.left = e.clientX + 'px';
-        cursorDot.style.top = e.clientY + 'px';
-        cursorRing.style.left = e.clientX + 'px';
-        cursorRing.style.top = e.clientY + 'px';
-    });
-
-    // --- HEART MATH (Parametric Equation) ---
-    function getHeartPosition(u, v) {
-        // u: 0 to PI * 2 (rotation)
-        // v: 0 to PI (depth)
-        const x = 16 * Math.pow(Math.sin(u), 3);
-        const y = 13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u);
-        const z = v * 4; // Extrusion
-        
-        return new THREE.Vector3(x, y, z);
-    }
-
-    // --- PARTICLE SYSTEM ---
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const sizes = new Float32Array(PARTICLE_COUNT);
-    const colors = new Float32Array(PARTICLE_COUNT * 3);
-    const alphas = new Float32Array(PARTICLE_COUNT);
-    const velocities = []; // For explosion physics
-    const originalPositions = [];
-
-    const colorHeart = new THREE.Color(COLORS.heart);
-    const colorAura = new THREE.Color(COLORS.aura);
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-        // Parametric coords
-        const u = Math.random() * Math.PI * 2;
-        const v = (Math.random() - 0.5) * 2; // -1 to 1
-        
-        const pos = getHeartPosition(u, v);
-        pos.multiplyScalar(HEART_SIZE / 16); // Scale down
-
-        // Store original pos
-        originalPositions.push(pos.clone());
-        
-        positions[i * 3] = pos.x;
-        positions[i * 3 + 1] = pos.y;
-        positions[i * 3 + 2] = pos.z;
-
-        // Random size
-        sizes[i] = Math.random() * 2 + 0.5;
-        
-        // Color gradient
-        colorHeart.lerp(colorAura, Math.random());
-        colors[i * 3] = colorHeart.r;
-        colors[i * 3 + 1] = colorHeart.g;
-        colors[i * 3 + 2] = colorHeart.b;
-
-        alphas[i] = 1.0;
-        velocities.push(new THREE.Vector3(0,0,0));
-    }
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-    geometry.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('aAlpha', new THREE.BufferAttribute(alphas, 1));
-
-    // --- SHADER MATERIAL (Glowing Points) ---
-    const material = new THREE.PointsMaterial({
-        size: 0.1,
-        vertexColors: true,
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        sizeAttenuation: true
-    });
-
-    // Custom Shader for better glow
-    material.onBeforeCompile = (shader) => {
-        shader.uniforms.uTime = { value: 0 };
-        shader.uniforms.uMouse = { value: new THREE.Vector2(0,0) };
-        shader.uniforms.uExplode = { value: 0 };
-        
-        shader.vertexShader = `
-            attribute float size;
-            attribute vec3 aColor;
-            attribute float aAlpha;
-            varying vec3 vColor;
-            varying float vAlpha;
-            uniform float uTime;
-            uniform vec2 uMouse;
-            uniform float uExplode;
-            
-            // Simple noise for floating
-            float noise(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
-
-            void main() {
-                vColor = aColor;
-                vAlpha = aAlpha;
-                
-                vec3 pos = position;
-                
-                // Floating animation
-                float n = noise(vec2(position.x * 0.1 + uTime, position.y * 0.1));
-                pos.z += sin(uTime + position.x) * 0.5;
-                pos.y += cos(uTime + position.z) * 0.3;
-
-                // Mouse Interaction (Attraction/Repulsion)
-                vec2 mouse3D = uMouse * 10.0; 
-                float dist = distance(pos.xy, mouse3D);
-                if(dist < 5.0 && uExplode < 0.5) {
-                    vec2 force = normalize(pos.xy - mouse3D) * (5.0 - dist) * 0.5;
-                    pos.xy += force;
-                }
-
-                // Explosion Logic
-                if(uExplode > 0.5) {
-                    // This part handled in JS for physics, but we can add vertex jitter here
-                }
-
-                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-                gl_PointSize = size * (300.0 / -mvPosition.z);
-                gl_Position = projectionMatrix * mvPosition;
-            }
-        `;
-        shader.fragmentShader = `
-            varying vec3 vColor;
-            varying float vAlpha;
-            void main() {
-                float dist = length(gl_PointCoord - vec2(0.5));
-                if(dist > 0.5) discard;
-                
-                float alpha = smoothstep(0.5, 0.0, dist) * vAlpha;
-                // Glow effect
-                vec3 glow = vColor * (1.0 + (1.0 - dist) * 2.0);
-                
-                gl_FragColor = vec4(glow, alpha);
-            }
-        `;
-    };
-
-    const heart = new THREE.Points(geometry, material);
-    heart.rotation.x = -0.2; // Tilt it slightly
-    scene.add(heart);
-
-    // --- BACKGROUND STARS ---
-    const starsGeo = new THREE.BufferGeometry();
-    const starsCount = 2000;
-    const starsPos = new Float32Array(starsCount * 3);
-    for(let i=0; i<starsCount; i++) {
-        const radius = 50 + Math.random() * 50;
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.acos(2 * Math.random() - 1);
-        starsPos[i*3] = radius * Math.sin(phi) * Math.cos(theta);
-        starsPos[i*3+1] = radius * Math.sin(phi) * Math.sin(theta);
-        starsPos[i*3+2] = radius * Math.cos(phi);
-    }
-    starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
-    const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1, transparent: true, opacity: 0.5 });
-    const stars = new THREE.Points(starsGeo, starsMat);
-    scene.add(stars);
-
-    // --- MUSIC ---
-    const music = document.getElementById('bgMusic');
-    const musicToggle = document.getElementById('musicToggle');
-    const musicIcon = document.getElementById('musicIcon');
-    const musicIconOff = document.getElementById('musicIconOff');
-    let audioContext, analyser; 
-    
-    function initAudio() {
-        if(audioContext) return;
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const source = audioContext.createMediaElementSource(music);
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        source.connect(analyser).connect(audioContext.destination);
-        music.play().catch(e => console.log("Autoplay blocked"));
-    }
-    
-    musicToggle.addEventListener('click', () => {
-        initAudio();
-        if(music.paused) { music.play(); musicIcon.classList.remove('hidden'); musicIconOff.classList.add('hidden'); }
-        else { music.pause(); musicIcon.classList.add('hidden'); musicIconOff.classList.remove('hidden'); }
-    });
-
-    // --- ANIMATION LOOP ---
-    let time = 0;
-    let isExploded = false;
-    let explodeProgress = 0;
-
-    function animate() {
-        requestAnimationFrame(animate);
-        time += 0.01;
-
-        // Smooth mouse follow for shader
-        mouse.lerp(targetMouse, 0.1);
-        material.uniforms.uTime.value = time;
-        material.uniforms.uMouse.value.set(mouse.x, mouse.y);
-
-        // Heart Rotation
-        heart.rotation.y += 0.0005;
-        stars.rotation.y -= 0.0001;
-
-        // Audio Reactivity
-        if(analyser) {
-            const data = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(data);
-            const bass = (data[0] + data[1] + data[2]) / 3 / 255;
-            heart.scale.setScalar(1 + bass * 0.1); // Pulsate
+      function initStars() {
+        stars = [];
+        const starCount = Math.floor((width * height) / 1800);
+        for (let i = 0; i < starCount; i++) {
+          stars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: Math.random() * 2.2 + 0.6,
+            alpha: Math.random(),
+            alphaSpeed: (Math.random() * 0.012 + 0.004),
+            growing: true,
+          });
         }
+      }
 
-        // Explosion Physics (JS driven for control)
-        if(isExploded) {
-            explodeProgress += 0.02;
-            const posAttr = geometry.attributes.position;
-            const velAttr = velocities; 
-            
-            for(let i=0; i<PARTICLE_COUNT; i++) {
-                // Apply velocity
-                posAttr.array[i*3] += velAttr[i].x;
-                posAttr.array[i*3+1] += velAttr[i].y;
-                posAttr.array[i*3+2] += velAttr[i].z;
-                
-                // Gravity/Drag
-                velAttr[i].y -= 0.01; // Gravity
-                velAttr[i].multiplyScalar(0.98); // Drag
-            }
-            posAttr.needsUpdate = true;
-
-            if(explodeProgress > 3) { // Reform
-                reformHeart();
-            }
+      function drawStars() {
+        ctx.clearRect(0, 0, width, height);
+        for (let s of stars) {
+          if (s.growing) {
+            s.alpha += s.alphaSpeed;
+            if (s.alpha >= 0.9) s.growing = false;
+          } else {
+            s.alpha -= s.alphaSpeed;
+            if (s.alpha <= 0.15) s.growing = true;
+          }
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 220, 240, ${s.alpha})`;
+          ctx.shadowColor = '#ff99bb';
+          ctx.shadowBlur = 8;
+          ctx.fill();
         }
+        requestAnimationFrame(drawStars);
+      }
 
-        renderer.render(scene, camera);
-    }
+      resizeCanvas();
+      initStars();
+      drawStars();
 
-    function explodeHeart() {
-        if(isExploded) return;
-        isExploded = true;
-        explodeProgress = 0;
-        
-        const posAttr = geometry.attributes.position;
-        cursorRing.style.width = '100px';
-        cursorRing.style.height = '100px';
-        cursorRing.style.borderColor = '#fff';
+      // ----- WEB AUDIO MUSIC (gentle romantic loop) -----
+      let audioCtx = null;
+      let musicPlaying = false;
+      let masterGain = null;
+      let musicInterval = null;
+      const musicToggle = document.getElementById('musicToggle');
 
-        for(let i=0; i<PARTICLE_COUNT; i++) {
-            // Random explosion velocity
-            velocities[i].set(
-                (Math.random()-0.5) * 0.5,
-                (Math.random()-0.5) * 0.5 + 0.2, // Upwards bias
-                (Math.random()-0.5) * 0.5
-            );
+      function createMusic() {
+        if (audioCtx) return;
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          masterGain = audioCtx.createGain();
+          masterGain.gain.value = 0.25;
+          masterGain.connect(audioCtx.destination);
+        } catch (e) {
+          console.warn("Web Audio not supported");
+          musicToggle.textContent = "🎵 music unavailable";
+          musicToggle.style.opacity = "0.6";
         }
-    }
+      }
 
-    function reformHeart() {
-        isExploded = false;
-        explodeProgress = 0;
-        cursorRing.style.width = '40px';
-        cursorRing.style.height = '40px';
-        cursorRing.style.borderColor = 'var(--glow)';
-        
-        gsap.to(velocities, { duration: 2, x: 0, y: 0, z: 0, ease: "power2.inOut" });
-        
-        // Animate positions back to original
-        const posAttr = geometry.attributes.position;
-        for(let i=0; i<PARTICLE_COUNT; i++) {
-            gsap.to(posAttr.array, {
-                duration: 2, 
-                ease: "elastic.out(1, 0.5)",
-                [`${i*3}`]: originalPositions[i].x,
-                [`${i*3+1}`]: originalPositions[i].y,
-                [`${i*3+2}`]: originalPositions[i].z,
-                onUpdate: () => posAttr.needsUpdate = true
-            });
+      function playNote(freq, startTime, duration, type = 'sine', vol = 0.16) {
+        if (!audioCtx || !masterGain) return;
+        const osc = audioCtx.createOscillator();
+        const noteGain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        noteGain.gain.setValueAtTime(vol, startTime);
+        noteGain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+        osc.connect(noteGain);
+        noteGain.connect(masterGain);
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      }
+
+      function startMelodyLoop() {
+        if (!audioCtx || musicInterval) return;
+        const now = audioCtx.currentTime;
+        // dreamy chord progression: Cmaj7, Am9, Fmaj7, G7 (approximated with simple notes)
+        const pattern = [
+          { notes: [261.63, 329.63, 392.00, 493.88], dur: 1.8 }, // Cmaj7-ish
+          { notes: [220.00, 277.18, 329.63, 440.00], dur: 1.8 }, // Am add9
+          { notes: [349.23, 440.00, 523.25, 659.25], dur: 1.8 }, // Fmaj7
+          { notes: [392.00, 493.88, 587.33, 783.99], dur: 1.8 }, // G7-ish
+        ];
+        let step = 0;
+        function loop() {
+          if (!audioCtx || !musicPlaying) return;
+          const t = audioCtx.currentTime;
+          const chord = pattern[step % pattern.length];
+          chord.notes.forEach((freq, i) => {
+            playNote(freq, t + i * 0.08, chord.dur * 0.9, i === 0 ? 'triangle' : 'sine', 0.12);
+          });
+          // soft bell accent
+          playNote(chord.notes[0] * 2, t + 0.2, 0.7, 'sine', 0.07);
+          step++;
         }
-    }
+        loop();
+        musicInterval = setInterval(loop, 1800);
+      }
 
-    // --- GSAP TEXT ANIMATION ---
-    const mainTitle = document.getElementById('mainTitle');
-    const subTitle = document.getElementById('subTitle');
-    const enterBtn = document.getElementById('enterBtn');
-    const textContainer = document.getElementById('textContainer');
+      function stopMusic() {
+        if (musicInterval) {
+          clearInterval(musicInterval);
+          musicInterval = null;
+        }
+        if (masterGain) {
+          masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+        }
+        musicPlaying = false;
+        musicToggle.textContent = "🎵 tap to start music";
+      }
 
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-    tl.to(textContainer, { opacity: 1, y: 0, duration: 1.5 })
-      .from(mainTitle, { duration: 1.5, y: 50, opacity: 0, ease: "expo.out" }, "-=1")
-      .from(subTitle, { duration: 1, y: 20, opacity: 0 }, "-=1")
-      .from(enterBtn, { duration: 1, scale: 0.5, opacity: 0 }, "-=0.5");
+      function startMusic() {
+        if (!audioCtx) {
+          createMusic();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        if (masterGain) {
+          masterGain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        }
+        musicPlaying = true;
+        musicToggle.textContent = "🎵 playing... (tap to pause)";
+        startMelodyLoop();
+      }
 
-    // --- EVENTS ---
-    enterBtn.addEventListener('click', () => {
-        initAudio();
-        gsap.to(textContainer, { opacity: 0, y: -50, duration: 1, ease: "power3.in" });
-        explodeHeart();
-    });
+      musicToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (musicPlaying) {
+          stopMusic();
+        } else {
+          startMusic();
+        }
+      });
 
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+      // first user interaction can resume audio context if needed
+      document.body.addEventListener('click', () => {
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }, { once: true });
 
-    animate();
-</script>
+      // ----- BUTTON INTERACTIONS -----
+      const yesBtn = document.getElementById('yesBtn');
+      const noBtn = document.getElementById('noBtn');
+      const responseDiv = document.getElementById('responseMessage');
+
+      function showMessage(text, emoji = '💖') {
+        responseDiv.style.opacity = '1';
+        responseDiv.textContent = text + ' ' + emoji;
+      }
+
+      yesBtn.addEventListener('click', () => {
+        showMessage("Yay! You just made my whole universe brighter 💫", "🌠");
+        // burst extra hearts effect
+        createExtraHearts();
+        if (!musicPlaying) startMusic();
+        // disable no button shenanigans after yes
+        noBtn.style.pointerEvents = 'none';
+        noBtn.style.opacity = '0.5';
+      });
+
+      // playful "no" button that moves away
+      noBtn.addEventListener('mouseover', (e) => {
+        if (responseDiv.textContent.includes('Yay')) return;
+        const btn = noBtn;
+        const maxX = window.innerWidth - btn.offsetWidth - 20;
+        const maxY = window.innerHeight - btn.offsetHeight - 20;
+        const randomX = Math.max(10, Math.random() * maxX);
+        const randomY = Math.max(10, Math.random() * maxY);
+        btn.style.position = 'fixed';
+        btn.style.left = randomX + 'px';
+        btn.style.top = randomY + 'px';
+        btn.style.zIndex = '999';
+      });
+
+      noBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (responseDiv.textContent.includes('Yay')) return;
+        showMessage("Nice try... but the answer is already yes in my heart 😌", "💗");
+        setTimeout(() => {
+          if (!responseDiv.textContent.includes('Yay')) {
+            responseDiv.style.opacity = '0';
+          }
+        }, 2500);
+      });
+
+      // extra floating hearts on yes
+      function createExtraHearts() {
+        const container = document.querySelector('.heart-container');
+        for (let i = 0; i < 7; i++) {
+          setTimeout(() => {
+            const heartSpan = document.createElement('span');
+            heartSpan.textContent = ['💗','💖','💘','💝','💕','✨','💞'][i % 7];
+            heartSpan.style.position = 'fixed';
+            heartSpan.style.fontSize = (2 + Math.random() * 2.5) + 'rem';
+            heartSpan.style.left = Math.random() * 80 + 10 + '%';
+            heartSpan.style.top = Math.random() * 60 + 20 + '%';
+            heartSpan.style.zIndex = '1000';
+            heartSpan.style.pointerEvents = 'none';
+            heartSpan.style.animation = 'heartBeat 0.8s ease-out forwards';
+            document.body.appendChild(heartSpan);
+            setTimeout(() => heartSpan.remove(), 900);
+          }, i * 120);
+        }
+      }
+
+      // reset no button position if window resized
+      window.addEventListener('resize', () => {
+        if (noBtn.style.position === 'fixed') {
+          noBtn.style.position = '';
+          noBtn.style.left = '';
+          noBtn.style.top = '';
+        }
+      });
+
+      // Start music automatically on first user gesture (click anywhere) if not started
+      document.body.addEventListener('click', function autoStartMusic() {
+        if (!musicPlaying && audioCtx && audioCtx.state !== 'suspended') {
+          startMusic();
+        }
+      }, { once: true });
+
+    })();
+  </script>
 </body>
 </html>
